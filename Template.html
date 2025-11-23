@@ -1,232 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salary Slip</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f9;
-        }
-
-        .container {
-            width: 800px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border: 1px solid #000;
-        }
-
-        .header, .footer {
-            text-align: center;
-        }
-
-            .header h1 {
-                margin: 0;
-                font-size: 20px;
-                font-weight: bold;
-            }
-
-            .header p {
-                margin: 5px 0;
-                font-size: 14px;
-            }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-            .logo img {
-                width: 150px;
-                height: auto;
-            }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-
-        table, th, td {
-            border: 1px solid #000;
-        }
-
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-
-        .earnings-deductions {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .earnings, .deductions {
-            width: 48%;
-        }
-
-        .summary {
-            margin-top: 20px;
-        }
-
-        .footer p {
-            margin: 5px 0;
-        }
-
-        .signature {
-            text-align: right;
-            margin-top: 40px;
-        }
-
-            .signature p {
-                margin: 0;
-            }
-    </style>
+  <meta charset="UTF-8">
+  <title>Salary Slip</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    .container { width: 800px; margin: auto; border: 2px solid #000; padding: 20px; }
+    .header, .footer { text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    table, th, td { border: 1px solid #000; }
+    th, td { padding: 8px; text-align: left; }
+    .earnings-deductions { display: flex; justify-content: space-between; }
+    .earnings, .deductions { width: 48%; }
+    .signature { text-align: right; margin-top: 50px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">
-            <img src="https://avatars.githubusercontent.com/u/55801366?v=4" alt="Company Logo">
-        </div>
-        <div class="header">
-            <img src="https://avatars.githubusercontent.com/u/55801366?v=4" alt="Company Logo">
-            <h1>Developed by Vohala</h1>
-            <p>Mumbai</p>
-            <p>Phone: 8080808080</p>
-            <h2>Payslip</h2>
-        </div>
-        <table>
-            <tr>
-                <td>Month</td>
-                <td></td>
-                <td>EMP No.</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Pay Period</td>
-                <td><n>    </n></td>
-                <td>Name</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Worked Days</td>
-                <td></td>
-                <td>Designation</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Balance Leave</td>
-                <td></td>
-                <td>Department</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Paid Leave Days</td>
-                <td>Unpaid</td>
-                <td>Pan Card No</td>
-                <td>Unpaid</td>
-            </tr>
-            <tr>
-                <td>Unpaid Leave</td>
-                <td></td>
-                <td>Weekoff and Holidays</td>
-                <td></td>
-            </tr>
-        </table>
-        <div class="earnings-deductions">
-            <div class="earnings">
-                <table>
-                    <tr>
-                        <th colspan="2">Earnings</th>
-                    </tr>
-                    <tr>
-                        <td>Basic Salary</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>HRA</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>DA</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Other Allowance</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Performance Bonus</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Bonus</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Gross Salary</td>
-                        <td></td>
-                    </tr>
-                </table>
-            </div>
-            
-                <table>
-                    <tr>
-                        <th colspan="2">Deductions</th>
-                    </tr>
-                    <tr>
-                        <td>Professional Tax</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Provident Fund</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Advance Salary</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Loan EMI</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Other Deduction</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Total Deductions</td>
-                        <td></td>
-                    </tr>
-                </table>
-            </div>
-       
-        <div class="summary">
-            <table>
-                <tr>
-                    <td>Net Salary</td>
-                    <td></td>
-                    <td>Total Deductions</td>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
-        <div class="footer">
-            
-            <div class="signature">
-                <p>Authorized Signature</p>
-            </div>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>Developed by Vohala</h1>
+      <p>Mumbai | Phone: 8080808080</p>
+      <h2>Payslip</h2>
     </div>
+
+    <table>
+      <tr><td>Month</td><td>{{Month}}</td><td>EMP No.</td><td>{{EMP No.}}</td></tr>
+      <tr><td>Pay Period</td><td>{{Pay Period}}</td><td>Name</td><td>{{Name}}</td></tr>
+      <tr><td>Worked Days</td><td>{{Worked Days}}</td><td>Designation</td><td>{{Designation}}</td></tr>
+      <tr><td>Balance Leave</td><td>{{Balance Leave}}</td><td>Department</td><td>{{Department}}</td></tr>
+      <tr><td>Paid Leave Days</td><td>{{Paid Leave Days}}</td><td>Pan Card No</td><td>{{Pan Card No}}</td></tr>
+      <tr><td>Unpaid Leave</td><td>{{Unpaid Leave}}</td><td>Weekoff and Holidays</td><td>{{Weekoff and Holidays}}</td></tr>
+    </table>
+
+    <div class="earnings-deductions">
+      <div class="earnings">
+        <table>
+          <tr><th colspan="2">Earnings</th></tr>
+          <tr><td>Basic Salary</td><td>{{Basic Salary}}</td></tr>
+          <tr><td>HRA</td><td>{{HRA}}</td></tr>
+          <tr><td>DA</td><td>{{DA}}</td></tr>
+          <tr><td>Other Allowance</td><td>{{Other Allowance}}</td></tr>
+          <tr><td>Performance Bonus</td><td>{{Performance Bonus}}</td></tr>
+          <tr><td>Bonus</td><td>{{Bonus}}</td></tr>
+          <tr><td>Gross Salary</td><td>{{Gross Salary}}</td></tr>
+        </table>
+      </div>
+      <div class="deductions">
+        <table>
+          <tr><th colspan="2">Deductions</th></tr>
+          <tr><td>Professional Tax</td><td>{{Professional Tax}}</td></tr>
+          <tr><td>Provident Fund</td><td>{{Provident Fund}}</td></tr>
+          <tr><td>Advance Salary</td><td>{{Advance Salary}}</td></tr>
+          <tr><td>Loan EMI</td><td>{{Loan EMI}}</td></tr>
+          <tr><td>Other Deduction</td><td>{{Other Deduction}}</td></tr>
+          <tr><td>Total Deductions</td><td>{{Total Deductions}}</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <table class="summary">
+      <tr><td><strong>Net Salary</strong></td><td><strong>{{Net Salary}}</strong></td></tr>
+    </table>
+
+    <div class="signature">
+      <p>______________________<br>Authorized Signature</p>
+    </div>
+  </div>
 </body>
 </html>

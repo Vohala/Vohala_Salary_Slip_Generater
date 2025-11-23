@@ -1,102 +1,90 @@
-// script.js
-
-document.getElementById('employee-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const formData = {
-        employeeId: document.getElementById('employee-id').value,
-        name: document.getElementById('name').value,
-        designation: document.getElementById('designation').value,
-        department: document.getElementById('department').value,
-        panCardNo: document.getElementById('pan-card-no').value,
-        grossSalary: document.getElementById('gross-salary').value,
-        totalDeductions: document.getElementById('total-deductions').value,
-        netSalary: document.getElementById('net-salary').value,
-        email: document.getElementById('email').value
-    };
-
-    const response = await fetch('/api/employee', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+async function loadEmployees() {
+  try {
+    const res = await fetch('/api/employees');
+    const employees = await res.json();
+    const select = document.getElementById('employee-select');
+    select.innerHTML = '<option value="" disabled selected>Select Employee</option>';
+    employees.forEach(emp => {
+      const opt = document.createElement('option');
+      opt.value = emp.employeeId;
+      opt.textContent = `${emp.name} - ${emp.designation} (${emp.department})`;
+      select.appendChild(opt);
     });
-
-    if (response.ok) {
-        alert('Employee saved successfully!');
-        loadEmployeeNames(); 
-    } else {
-        const errorText = await response.text();
-        alert('Error saving employee: ' + errorText);
-    }
-});
-
-document.getElementById('salary-slip-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const formData = {
-        month: document.getElementById('month').value,
-        employeeId: document.getElementById('employee-id').value,
-        payPeriod: document.getElementById('pay-period').value,
-        workingDays: document.getElementById('working-days').value,
-        balanceLeave: document.getElementById('balance-leave').value,
-        paidLeaveDays: document.getElementById('paid-leave-days').value,
-        unpaidLeave: document.getElementById('unpaid-leave').value,
-        weekoffHolidays: document.getElementById('weekoff-holidays').value,
-        basicSalary: document.getElementById('basic-salary').value,
-        hra: document.getElementById('hra').value,
-        da: document.getElementById('da').value,
-        otherAllowances: document.getElementById('other-allowances').value,
-        performanceBonus: document.getElementById('performance-bonus').value,
-        bonus: document.getElementById('bonus').value,
-        professionalTax: document.getElementById('professional-tax').value,
-        providentFund: document.getElementById('provident-fund').value,
-        advanceSalary: document.getElementById('advance-salary').value,
-        loanEmi: document.getElementById('loan-emi').value,
-        otherDeductions: document.getElementById('other-deductions').value
-    };
-
-    const response = await fetch('/api/salary-slip', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    });
-
-    if (response.ok) {
-        alert('Salary slip generated and emailed successfully!');
-    } else {
-        const errorText = await response.text();
-        alert('Error generating salary slip: ' + errorText);
-    }
-});
-
-
-async function loadEmployeeNames() {
-    const response = await fetch('/api/employees');
-    const employees = await response.json();
-    const employeeNameSelect = document.getElementById('employee-name');
-    employeeNameSelect.innerHTML = '';
-    employees.forEach(employee => {
-        const option = document.createElement('option');
-        option.value = employee.name;
-        option.textContent = employee.name;
-        employeeNameSelect.appendChild(option);
-    });
+  } catch (err) {
+    console.error('Load employees failed:', err);
+  }
 }
 
+document.getElementById('employee-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const data = {
+    employeeId: document.getElementById('employee-id').value.trim(),
+    name: document.getElementById('name').value.trim(),
+    designation: document.getElementById('designation').value.trim(),
+    department: document.getElementById('department').value.trim(),
+    panCardNo: document.getElementById('pan-card-no').value.trim(),
+    grossSalary: +document.getElementById('gross-salary').value,
+    totalDeductions: +document.getElementById('total-deductions').value,
+    netSalary: +document.getElementById('net-salary').value,
+    email: document.getElementById('email').value.trim()
+  };
 
-document.addEventListener('DOMContentLoaded', loadEmployeeNames);
+  const res = await fetch('/api/employee', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
 
-function showForm(formId) {
-    const forms = document.querySelectorAll('.form-container');
-    forms.forEach(form => {
-        if (form.id === formId) {
-            form.classList.add('active');
-        } else {
-            form.classList.remove('active');
-        }
-    });
-}
+  if (res.ok) {
+    alert('Employee saved!');
+    e.target.reset();
+    loadEmployees();
+  } else {
+    alert('Error: ' + await res.text());
+  }
+};
+
+document.getElementById('salary-slip-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const empId = document.getElementById('employee-select').value;
+  if (!empId) return alert('Please select an employee');
+
+  const data = {
+    month: document.getElementById('month').value,
+    employeeId: empId,
+    payPeriod: document.getElementById('pay-period').value,
+    workingDays: +document.getElementById('working-days').value,
+    balanceLeave: +document.getElementById('balance-leave').value || 0,
+    paidLeaveDays: +document.getElementById('paid-leave-days').value || 0,
+    unpaidLeave: +document.getElementById('unpaid-leave').value || 0,
+    weekoffHolidays: +document.getElementById('weekoff-holidays').value,
+    basicSalary: +document.getElementById('basic-salary').value,
+    hra: +document.getElementById('hra').value,
+    da: +document.getElementById('da').value,
+    otherAllowances: +document.getElementById('other-allowances').value || 0,
+    performanceBonus: +document.getElementById('performance-bonus').value || 0,
+    bonus: +document.getElementById('bonus').value || 0,
+    professionalTax: +document.getElementById('professional-tax').value || 0,
+    providentFund: +document.getElementById('provident-fund').value || 0,
+    advanceSalary: +document.getElementById('advance-salary').value || 0,
+    loanEmi: +document.getElementById('loan-emi').value || 0,
+    otherDeductions: +document.getElementById('other-deductions').value || 0
+  };
+
+  const res = await fetch('/api/salary-slip', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+
+  const result = await res.json();
+  if (res.ok) {
+    alert('Salary slip generated and emailed successfully!');
+    e.target.reset();
+    document.getElementById('employee-select').selectedIndex = 0;
+  } else {
+    alert('Error: ' + (result.error || 'Unknown error'));
+  }
+};
+
+document.addEventListener('DOMContentLoaded', loadEmployees);

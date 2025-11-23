@@ -1,186 +1,137 @@
-const express = require('express');
-const mongoose = require('mongoose');
+require('dotenv').config();
+const express =  require('express');
+const mongoose =   require('mongoose');
 const nodemailer = require('nodemailer');
-const bodyParser = require('body-parser');
-const { PDFDocument, rgb } = require('pdf-lib');
-const fs = require('fs');
-const path = require('path');
-require('dotenv').config(); 
+const fs =         require('fs');
+const path =       require('path');
+const { generatePdf } = require('html-pdf-node');
 
 const app = express();
-app.use(bodyParser.json());
-
-
-mongoose.connect('mongodb://localhost:27017/employees', { useNewUrlParser: true, useUnifiedTopology: true });
-
-
-const employeeSchema = new mongoose.Schema({
-    employeeId: String,
-    name: String,
-    designation: String,
-    department: String,
-    panCardNo: String,
-    grossSalary: Number,
-    totalDeductions: Number,
-    netSalary: Number,
-    email: String
-});
-
-const Employee = mongoose.model('Employee', employeeSchema);
-
-
-const salarySlipSchema = new mongoose.Schema({
-    month: String,
-    employeeId: String,
-    payPeriod: String,
-    workingDays: Number,
-    balanceLeave: Number,
-    paidLeaveDays: Number,
-    unpaidLeave: Number,
-    weekoffHolidays: Number,
-    basicSalary: Number,
-    hra: Number,
-    da: Number,
-    otherAllowances: Number,
-    performanceBonus: Number,
-    bonus: Number,
-    professionalTax: Number,
-    providentFund: Number,
-    advanceSalary: Number,
-    loanEmi: Number,
-    otherDeductions: Number
-});
-
-const SalarySlip = mongoose.model('SalarySlip', salarySlipSchema);
-
-
-app.post('/api/employee', async (req, res) => {
-    const {
-        employeeId,
-        name,
-        designation,
-        department,
-        panCardNo,
-        grossSalary,
-        totalDeductions,
-        netSalary,
-        email
-    } = req.body;
-
-    const employee = new Employee({
-        employeeId,
-        name,
-        designation,
-        department,
-        panCardNo,
-        grossSalary,
-        totalDeductions,
-        netSalary,
-        email
-    });
-    await employee.save();
-    res.sendStatus(200);
-});
-
-
-app.get('/api/employees', async (req, res) => {
-    try {
-        const employees = await Employee.find({}, 'name'); 
-        res.json(employees);
-    } catch (error) {
-        res.status(500).send('Error fetching employee names: ' + error.message);
-    }
-});
-
-
-async function generatePdf(salarySlip, employee) {
-    const pdfPath = path.resolve(__dirname, 'Salary Slip -  - 3.pdf');
-    const existingPdfBytes = fs.readFileSync(pdfPath);
-
-    const pdfDoc = await PDFDocument.load(existingPdfBytes);
-    const pages = pdfDoc.getPages();
-    const firstPage = pages[0];
-
-
-    firstPage.drawText(salarySlip.month, { x: 250, y: 613, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.payPeriod, { x: 200, y: 599, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.workingDays, { x: 200, y: 585, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.balanceLeave, { x: 200, y: 570, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.paidLeaveDays, { x: 200, y: 557, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.unpaidLeave, { x: 200, y: 543, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.weekoffHolidays, { x: 200, y: 529, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.basicSalary, { x: 200, y: 522, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.hra, { x: 200, y: 509, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.da, { x: 200, y: 496, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.otherAllowances, { x: 200, y: 430, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.performanceBonus, { x: 200, y: 410, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.bonus, { x: 200, y: 390, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(employee.employeeId, { x: 500, y: 600, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(employee.name, { x: 150, y: 690, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(employee.designation, { x: 150, y: 670, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(employee.department, { x: 150, y: 650, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(employee.panCardNo, { x: 150, y: 630, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.professionalTax, { x: 150, y: 370, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.providentFund, { x: 150, y: 350, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.advanceSalary, { x: 150, y: 330, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.loanEmi, { x: 150, y: 310, size: 12, color: rgb(0, 0, 0) });
-    firstPage.drawText(salarySlip.otherDeductions, { x: 150, y: 290, size: 12, color: rgb(0, 0, 0) });
-
-    const pdfBytes = await pdfDoc.save();
-    return pdfBytes;
-}
-
-
-app.post('/api/salary-slip', async (req, res) => {
-    const salarySlipData = req.body;
-
-    const employee = await Employee.findOne({ employeeId: salarySlipData.employeeId });
-    if (!employee) {
-        return res.status(404).send('Employee not found');
-    }
-
-    try {
-        
-        const salarySlip = new SalarySlip(salarySlipData);
-        await salarySlip.save();
-
-        
-        const pdfBytes = await generatePdf(salarySlipData, employee);
-
-        
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: employee.email,
-            subject: 'Salary Slip',
-            text: `Dear ${employee.name},\n\nPlease find attached your salary slip for ${salarySlipData.month}.\n\nBest regards,\nYour Company`,
-            attachments: [
-                {
-                    filename: 'Salary Slip.pdf',
-                    content: pdfBytes,
-                    contentType: 'application/pdf'
-                }
-            ]
-        };
-
-        await transporter.sendMail(mailOptions);
-        res.sendStatus(200);
-    } catch (error) {
-        console.error('Error generating or sending PDF:', error);
-        res.status(500).send('Error generating or sending PDF: ' + error.message);
-    }
-});
-
-
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
-app.listen(3000, '0.0.0.0',() => {
-    console.log('Server is running on port 3000');
+const { MONGODB_URI, EMAIL_USER, EMAIL_PASS } = process.env;
+
+if (!MONGODB_URI || !EMAIL_USER || !EMAIL_PASS) {
+  console.error('Missing credentials in .env file!');
+  process.exit(1);
+}
+
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => {
+    console.error('MongoDB Connection Failed:', err);
+    process.exit(1);
+  });
+
+const Employee = mongoose.model('Employee', new mongoose.Schema({
+  employeeId: { type: String, required: true, unique: true },
+  name: String, designation: String, department: String,
+  panCardNo: String, grossSalary: Number, totalDeductions: Number,
+  netSalary: Number, email: String
+}));
+
+const SalarySlip = mongoose.model('SalarySlip', new mongoose.Schema({
+  month: String, employeeId: String, payPeriod: String,
+  workingDays: Number, balanceLeave: Number, paidLeaveDays: Number,
+  unpaidLeave: Number, weekoffHolidays: Number,
+  basicSalary: Number, hra: Number, da: Number,
+  otherAllowances: Number, performanceBonus: Number, bonus: Number,
+  professionalTax: Number, providentFund: Number,
+  advanceSalary: Number, loanEmi: Number, otherDeductions: Number
+}, { timestamps: true }));
+
+app.post('/api/employee', async (req, res) => {
+  try {
+    await Employee.findOneAndUpdate(
+      { employeeId: req.body.employeeId },
+      req.body,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/employees', async (req, res) => {
+  try {
+    const employees = await Employee.find({}, 'employeeId name designation department');
+    res.json(employees);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/salary-slip', async (req, res) => {
+  try {
+    const data = req.body;
+    const employee = await Employee.findOne({ employeeId: data.employeeId });
+    if (!employee) return res.status(404).json({ error: 'Employee not found' });
+
+    await new SalarySlip(data).save();
+
+    let template = fs.readFileSync(path.join(__dirname, 'Template.html'), 'utf8');
+
+    const values = {
+      'Month': data.month,
+      'EMP No.': employee.employeeId,
+      'Pay Period': data.payPeriod,
+      'Name': employee.name,
+      'Worked Days': data.workingDays,
+      'Designation': employee.designation || '',
+      'Balance Leave': data.balanceLeave || 0,
+      'Department': employee.department || '',
+      'Paid Leave Days': data.paidLeaveDays || 0,
+      'Pan Card No': employee.panCardNo || '',
+      'Unpaid Leave': data.unpaidLeave || 0,
+      'Weekoff and Holidays': data.weekoffHolidays || 0,
+      'Basic Salary': data.basicSalary || 0,
+      'HRA': data.hra || 0,
+      'DA': data.da || 0,
+      'Other Allowance': data.otherAllowances || 0,
+      'Performance Bonus': data.performanceBonus || 0,
+      'Bonus': data.bonus || 0,
+      'Gross Salary': employee.grossSalary || 0,
+      'Professional Tax': data.professionalTax || 0,
+      'Provident Fund': data.providentFund || 0,
+      'Advance Salary': data.advanceSalary || 0,
+      'Loan EMI': data.loanEmi || 0,
+      'Other Deduction': data.otherDeductions || 0,
+      'Total Deductions': employee.totalDeductions || 0,
+      'Net Salary': employee.netSalary || 0
+    };
+
+    template = template.replace(/{{(.*?)}}/g, (match, key) => values[key.trim()] || '');
+
+    const pdfBuffer = await generatePdf(
+      { content: template },
+      { format: 'A4', printBackground: true }
+    );
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: EMAIL_USER, pass: EMAIL_PASS }
+    });
+
+    await transporter.sendMail({
+      from: EMAIL_USER,
+      to: employee.email,
+      subject: `Salary Slip - ${data.month}`,
+      text: `Dear ${employee.name},\n\nPlease find your salary slip attached.\n\nBest regards,\nVohala Team`,
+      attachments: [{
+        filename: `Salary_Slip_${employee.name.replace(/\s+/g, '_')}_${data.month}.pdf`,
+        content: pdfBuffer
+      }]
+    });
+
+    res.json({ message: 'Salary slip emailed successfully!' });
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: err.message || 'Server error' });
+  }
+});
+
+app.listen(3000, '0.0.0.0', () => {
+  console.log('Server running at http://localhost:3000');
 });
